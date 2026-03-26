@@ -4,7 +4,22 @@ module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
   try {
-    const { date, hour } = req.body;
+    // 👉 手动解析 body（关键修复）
+    let body = req.body;
+
+    if (!body) {
+      body = await new Promise((resolve) => {
+        let data = "";
+        req.on("data", chunk => {
+          data += chunk;
+        });
+        req.on("end", () => {
+          resolve(JSON.parse(data || "{}"));
+        });
+      });
+    }
+
+    const { date, hour } = body;
 
     if (!date || hour === undefined) {
       return res.status(400).json({ error: "Missing params" });
