@@ -1,7 +1,7 @@
 {
-  "name": "ziwu-astro-api",
+  "name": "ziwu-api",
   "version": "1.0.0",
   "dependencies": {
-    "iztro": "^2.3.0"
+    "iztro": "^2.0.5"
   }
 }
