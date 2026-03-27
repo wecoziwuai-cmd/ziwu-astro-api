@@ -27,15 +27,15 @@ module.exports = (req, res) => {
 
     const astrolabe = astro.bySolar(date, timeIndex, gender, true, 'zh-CN');
 
-    // ======= 修复核心：精准且暴力的日柱天干抓取法 =======
+    // ======= 终极暴力破壁法：提取日柱天干 =======
+    // 无论格式怎么变，直接用筛子过滤出所有天干字符，第3个绝对是日干！
     let dayStem = '甲'; 
-    if (astrolabe.eightCharacters && astrolabe.eightCharacters.day) {
-        dayStem = astrolabe.eightCharacters.day.charAt(0);
-    } else if (astrolabe.chineseDate) {
-        // 利用正则匹配，死死盯住"月"字后面的第一个字符（也就是日干）
-        const match = astrolabe.chineseDate.match(/月\s*(.)/);
-        if (match && match[1]) {
-            dayStem = match[1];
+    if (astrolabe.chineseDate) {
+        const tianGan = "甲乙丙丁戊己庚辛壬癸";
+        // 把八字拆成单字，过滤出天干
+        const stems = astrolabe.chineseDate.split('').filter(char => tianGan.includes(char));
+        if (stems.length >= 3) {
+            dayStem = stems[2]; // 第 1 个是年干，第 2 个是月干，第 3 个绝对是日干！
         }
     }
 
@@ -47,7 +47,6 @@ module.exports = (req, res) => {
       '壬': { base: '壬水', energy: '阳' }, '癸': { base: '癸水', energy: '阴' }
     };
     
-    // 映射对应五行与阴阳
     const stemInfo = stemMap[dayStem] || { base: '甲木', energy: '阳' };
 
     // ======= 提取 14 主星 =======
